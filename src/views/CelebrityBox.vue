@@ -8,7 +8,7 @@
                 <img class="celebrity-img" :src="currentCelebrity.url" width="940" height="660" alt="">
                 <div v-for="i in 11" class="block-row" :key="i">
                     <div v-for="j in 16" @click="removeBlock(i, j)" :class="blockClass(i, j)" :key="j">
-                        <span>{{i}},{{j}}</span>
+                        <span class="block-info">{{i}},{{j}}</span>
                     </div>
                 </div>
             </div>
@@ -128,5 +128,12 @@ export default {
     position: absolute;
     z-index: 1;
     left: 21px;
+}
+
+.block-info {
+    position: relative;
+    top: 30%;
+    font-size: 18px;
+    font-weight: 500;
 }
 </style>
