@@ -5,7 +5,9 @@
                 <h1><b>Guess the Celebrity</b></h1>
             </div>
             <div class="col-9 celebrity-div">
-                <img class="celebrity-img" :src="currentCelebrity.url" width="940" height="660" alt="">
+                <img class="celebrity-img"
+                    :src="require(`../assets/celebrity-images/${currentCelebrity.id}.${currentCelebrity.format}`)"
+                    width="940" height="660" alt="celebrity-image">
                 <div v-for="i in 11" class="block-row" :key="i">
                     <div v-for="j in 16" @click="removeBlock(i, j)" :class="blockClass(i, j)" :key="j">
                         <span class="block-info">{{i}},{{j}}</span>
@@ -14,15 +16,20 @@
             </div>
             <div class="col-3">
                 <div class="col-12">
-                    <button type="button" :disabled="showCelebrity" @click="revealCelebrity" class="btn btn-success">Reveal <i :class="showCelebrity ? 'fa-eye' : 'fa-eye-slash'" class="fa-regular"></i></button>
-                    <button type="button" :disabled="!showCelebrity && revealedBlocks.length === 0" @click="resetCelebrity" class="btn btn-danger mx-3">Reset <i class="fa-solid fa-arrows-rotate"></i></button>
+                    <button type="button" :disabled="showCelebrity" @click="revealCelebrity"
+                        class="btn btn-success">Reveal <i :class="showCelebrity ? 'fa-eye' : 'fa-eye-slash'"
+                            class="fa-regular"></i></button>
+                    <button type="button" :disabled="!showCelebrity && revealedBlocks.length === 0"
+                        @click="resetCelebrity" class="btn btn-danger mx-3">Reset <i
+                            class="fa-solid fa-arrows-rotate"></i></button>
                 </div>
                 <div class="col-12 mt-5">
                     <h3 v-show="!showCelebrity"><b>Remaining chances: {{remainingChances}}</b></h3>
                     <h3 v-show="showCelebrity"><b>Current celebrity: {{currentCelebrity.name}}</b></h3>
                 </div>
                 <div class="col-12">
-                    <button type="button" class="btn btn-primary mt-5" @click="nextCelebrity">Next <i class="fa-solid fa-chevron-right"></i></button>
+                    <button type="button" class="btn btn-primary mt-5" @click="nextCelebrity">Next <i
+                            class="fa-solid fa-chevron-right"></i></button>
                     <div v-if="isShowAlert" class="alert alert-success mt-5" role="alert">
                         switched to next celebrity
                     </div>
@@ -50,13 +57,18 @@ export default {
         this.selectNewCelebrity();
     },
     methods: {
-        selectNewCelebrity() {
-            this.currentCelebrity = celebrityList[Math.floor(Math.random() * celebrityList.length)];
+        selectNewCelebrity(currentCelebrity) {
+            if (currentCelebrity && currentCelebrity.id < this.shuffledCelebrityList.length) {
+                this.currentCelebrity = this.shuffledCelebrityList[currentCelebrity.id];
+            } else {
+                this.currentCelebrity = this.shuffledCelebrityList[0];
+            }
         },
         nextCelebrity() {
+            let currentCelebrity = { ...this.currentCelebrity };
             Object.assign(this.$data, this.$options.data());
             this.showAlert();
-            this.selectNewCelebrity();
+            this.selectNewCelebrity(currentCelebrity);
         },
         removeBlock(x, y) {
             if (!this.revealedBlocks.some(e => e === `${x}${y}`)) {
@@ -86,7 +98,13 @@ export default {
     computed: {
         remainingChances() {
             return this.maxChances - this.revealedBlocks.length;
-        }
+        },
+        shuffledCelebrityList() {
+            return celebrityList
+                .map(value => ({ value, sort: Math.random() }))
+                .sort((a, b) => a.sort - b.sort)
+                .map(({ value }) => value);
+        },
     }
 }
 
